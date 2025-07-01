@@ -79,18 +79,6 @@
         .fade-in {
             animation: fadeIn 0.6s ease-out forwards;
         }
-
-        .history-btn {
-            background-color: rgba(30, 27, 75, 0.5);
-            border: 1px solid #4c1d95;
-            color: #c4b5fd;
-            transition: all 0.2s ease;
-        }
-        .history-btn:hover {
-            background-color: rgba(59, 19, 84, 0.7);
-            color: #fff;
-            border-color: #a78bfa;
-        }
     </style>
 </head>
 <body class="text-gray-200">
@@ -120,7 +108,7 @@
                         </div>
                     </div>
                     <h1 class="text-3xl font-bold text-white">SIM Info Finder</h1>
-                    <p class="text-violet-300 mt-1">Asif Mushtaq <span class="text-pink-400"></p>
+                    <h2 class="text-xl font-semibold text-white mt-2">Asif Mushtaq</h2>
                     <p class="text-violet-300 mt-1">Developer <span class="text-pink-400">•</span> Creator <span class="text-pink-400">•</span> Problem Solver</p>
                 </div>
 
@@ -137,11 +125,6 @@
                         <span id="buttonText">Search Database</span>
                         <div id="loader" class="spinner hidden"></div>
                     </button>
-
-                    <!--<div id="history-container" class="mt-6 hidden">
-                        <h3 class="text-sm font-bold text-violet-300 mb-2 text-center">Recent Searches</h3>
-                        <div id="history-buttons" class="flex flex-wrap gap-2 justify-center"></div>
-                    </div> -->
 
                     <div id="resultsContainer" class="mt-6 space-y-4">
                         <div id="error-message" class="hidden p-4 text-sm text-pink-200 bg-pink-900/50 border border-pink-700 rounded-lg" role="alert"></div>
@@ -161,7 +144,6 @@
                             <li>Bypasses CORS issues by using a reliable proxy.</li>
                             <li>Real-time data fetching from the API.</li>
                             <li>Save results as a beautiful PNG screenshot.</li>
-                            <li>Keeps a history of your recent searches.</li>
                         </ul>
                          <h4 class="font-bold text-pink-400 text-lg pt-2">Disclaimer</h4>
                          <p>The data provided is sourced from a third-party API. We do not guarantee its accuracy or completeness. This tool should be used responsibly and ethically.</p>
@@ -190,8 +172,6 @@
         const loader = document.getElementById('loader');
         const buttonText = document.getElementById('buttonText');
         const saveScreenshotBtn = document.getElementById('saveScreenshotBtn');
-        //const historyContainer = document.getElementById('history-container');
-        const historyButtons = document.getElementById('history-buttons');
 
         // Tab References
         const searchTabBtn = document.getElementById('search-tab-btn');
@@ -199,13 +179,9 @@
         const searchContent = document.getElementById('search-content');
         const aboutContent = document.getElementById('about-content');
 
-        let searchHistory = ["3076956343", "3011425525"];
-
         document.addEventListener('DOMContentLoaded', () => {
             updateClock();
             setInterval(updateClock, 1000);
-            loadHistory();
-            renderHistory();
         });
 
         searchButton.addEventListener('click', fetchData);
@@ -236,47 +212,6 @@
                 aboutTabBtn.classList.add('active-tab');
             }
         }
-
-        function loadHistory() {
-            const storedHistory = localStorage.getItem('simSearchHistory');
-            if (storedHistory) {
-                const parsedHistory = JSON.parse(storedHistory);
-                if(parsedHistory.length > 0) {
-                   searchHistory = parsedHistory;
-                }
-            }
-        }
-
-        function saveHistory() {
-            localStorage.setItem('simSearchHistory', JSON.stringify(searchHistory));
-        }
-
-        function addToHistory(number) {
-            searchHistory = searchHistory.filter(item => item !== number);
-            searchHistory.unshift(number);
-            if (searchHistory.length > 5) searchHistory.pop();
-            saveHistory();
-            renderHistory();
-        }
-
-     //   function renderHistory() {
-        //    historyButtons.innerHTML = '';
-          //  if (searchHistory.length > 0) {
-           //     historyContainer.classList.remove('hidden');
-            //    searchHistory.forEach(number => {
-                //    const btn = document.createElement('button');
-                //    btn.className = 'history-btn px-3 py-1 rounded-md text-sm';
-                //    btn.textContent = number;
-                //    btn.onclick = () => {
-                 //       phoneNumberInput.value = number;
-                 //       fetchData();
-              //      };
-                //    historyButtons.appendChild(btn);
-            //    });
-          //  } else {
-            //    historyContainer.classList.add('hidden');
-           // }
-        //} 
 
         async function fetchData() {
             const phoneNumber = phoneNumberInput.value.trim();
@@ -312,7 +247,6 @@
                 
                 if (Array.isArray(jsonData) && jsonData.length > 0) {
                     displayData(jsonData);
-                    addToHistory(phoneNumber);
                 } else {
                     showError("No records were found for this number. 🤷‍♂️");
                 }
@@ -336,19 +270,9 @@
                 let content = `<h3 class="text-lg font-semibold text-pink-400 border-b border-violet-800 pb-3 mb-4">📄 Record ${index + 1}</h3>`;
                 content += '<div class="space-y-4">';
                 
-                // --- FIX: Smart data display ---
-                // This new logic iterates over all keys provided by the API for each record.
-                // It ensures that if a key like 'name' or 'address' exists, it will be displayed.
                 const preferredOrder = ['NAME', 'CNIC', 'NUMBER', 'ADDRESS', 'CITY', 'DATE'];
                 const recordKeys = Object.keys(record);
-
-                // Create a map for easy lookup of original keys by their uppercase version
-                const keyMap = recordKeys.reduce((map, key) => {
-                    map[key.toUpperCase()] = key;
-                    return map;
-                }, {});
                 
-                // Sort the keys based on preferred order, then alphabetically
                 const sortedKeys = recordKeys.sort((a, b) => {
                     const upperA = a.toUpperCase();
                     const upperB = b.toUpperCase();
@@ -361,9 +285,8 @@
                     return upperA.localeCompare(upperB);
                 });
 
-                // Display all available data in the sorted order
                 sortedKeys.forEach(key => {
-                    if (record[key]) { // Only display if there's a value
+                    if (record[key]) {
                         content += createDefinitionTerm(key, record[key]);
                     }
                 });
