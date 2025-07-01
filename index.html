@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📞 SIM Detail Checker</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      width: 360px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #0072ff;
+      margin-bottom: 25px;
+      font-size: 26px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      transition: 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #0072ff;
+      outline: none;
+    }
+
+    button {
+      background-color: #0072ff;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #005dc1;
+    }
+
+    .result {
+      margin-top: 25px;
+      padding: 20px;
+      background-color: #f4f8ff;
+      border-radius: 10px;
+      text-align: left;
+      display: none;
+      font-size: 16px;
+    }
+
+    .result p {
+      margin: 10px 0;
+    }
+
+    .error {
+      color: red;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .loader {
+      display: none;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📞 SIM Detail Checker</h2>
+    <input type="text" id="numberInput" placeholder="📱 Enter Mobile Number">
+    <button onclick="checkSimDetails()">🔍 Check Details</button>
+    <div class="loader" id="loader">⏳ Loading...</div>
+    <div class="error" id="errorMsg"></div>
+
+    <div class="result" id="resultBox">
+      <h3>🧾 SIM Information</h3>
+      <p><strong>👤 Name:</strong> <span id="name"></span></p>
+      <p><strong>🪪 CNIC:</strong> <span id="cnic"></span></p>
+      <p><strong>📱 Number:</strong> <span id="number"></span></p>
+      <p><strong>📶 Network:</strong> <span id="network"></span></p>
+      <p><strong>📍 Address:</strong> <span id="city"></span></p>
+    </div>
+  </div>
+
+  <script>
+    function checkSimDetails() {
+      const input = document.getElementById("numberInput").value.trim();
+      const number = input.replace(/^0/, ""); // Remove leading 0
+      const resultBox = document.getElementById("resultBox");
+      const loader = document.getElementById("loader");
+      const errorMsg = document.getElementById("errorMsg");
+
+      resultBox.style.display = "none";
+      errorMsg.style.display = "none";
+
+      if (number === "" || number.length !== 10 || isNaN(number)) {
+        errorMsg.textContent = "⚠️ Please enter a valid 11-digit Pakistani number (starting with 03...)";
+        errorMsg.style.display = "block";
+        return;
+      }
+
+      loader.style.display = "block";
+
+      fetch(`proxy.php?phone=${number}`)
+        .then(response => response.json())
+        .then(data => {
+          loader.style.display = "none";
+
+          if (Array.isArray(data) && data.length > 0) {
+            const record = data[0];
+            document.getElementById("name").textContent = record.Name || "N/A";
+            document.getElementById("cnic").textContent = record.CNIC || "N/A";
+            document.getElementById("number").textContent = "0" + record.Number || input;
+            document.getElementById("network").textContent = record.Operator || "N/A";
+            document.getElementById("city").textContent = record.Address || "N/A";
+            resultBox.style.display = "block";
+          } else {
+            errorMsg.textContent = "❌ No record found.";
+            errorMsg.style.display = "block";
+          }
+        })
+        .catch(error => {
+          loader.style.display = "none";
+          errorMsg.textContent = "🚫 Error fetching data. Please try again.";
+          errorMsg.style.display = "block";
+          console.error("Fetch error:", error);
+        });
+    }
+  </script>
+</body>
+</html>
