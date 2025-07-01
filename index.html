@@ -138,7 +138,19 @@
                         <div id="loader" class="spinner hidden"></div>
                     </button>
 
-                    
+                    <div id="history-container" class="mt-6 hidden">
+                        <h3 class="text-sm font-bold text-violet-300 mb-2 text-center">Recent Searches</h3>
+                        <div id="history-buttons" class="flex flex-wrap gap-2 justify-center"></div>
+                    </div>
+
+                    <div id="resultsContainer" class="mt-6 space-y-4">
+                        <div id="error-message" class="hidden p-4 text-sm text-pink-200 bg-pink-900/50 border border-pink-700 rounded-lg" role="alert"></div>
+                        <div id="data-display" class="hidden space-y-4"></div>
+                        <button id="saveScreenshotBtn" class="hidden w-full pro-btn text-white font-bold rounded-lg text-base px-6 py-3.5 items-center justify-center mt-4">
+                            <i class="fa-solid fa-camera-retro mr-2"></i> Save as Screenshot
+                        </button>
+                    </div>
+                </div>
 
                 <div id="about-content" class="tab-content hidden fade-in">
                     <div class="space-y-4 text-violet-200">
