@@ -138,10 +138,10 @@
                         <div id="loader" class="spinner hidden"></div>
                     </button>
 
-                    <div id="history-container" class="mt-6 hidden">
+                    <!--<div id="history-container" class="mt-6 hidden">
                         <h3 class="text-sm font-bold text-violet-300 mb-2 text-center">Recent Searches</h3>
                         <div id="history-buttons" class="flex flex-wrap gap-2 justify-center"></div>
-                    </div>
+                    </div> -->
 
                     <div id="resultsContainer" class="mt-6 space-y-4">
                         <div id="error-message" class="hidden p-4 text-sm text-pink-200 bg-pink-900/50 border border-pink-700 rounded-lg" role="alert"></div>
@@ -190,7 +190,7 @@
         const loader = document.getElementById('loader');
         const buttonText = document.getElementById('buttonText');
         const saveScreenshotBtn = document.getElementById('saveScreenshotBtn');
-        const historyContainer = document.getElementById('history-container');
+        //const historyContainer = document.getElementById('history-container');
         const historyButtons = document.getElementById('history-buttons');
 
         // Tab References
@@ -259,24 +259,24 @@
             renderHistory();
         }
 
-        function renderHistory() {
-            historyButtons.innerHTML = '';
-            if (searchHistory.length > 0) {
-                historyContainer.classList.remove('hidden');
-                searchHistory.forEach(number => {
-                    const btn = document.createElement('button');
-                    btn.className = 'history-btn px-3 py-1 rounded-md text-sm';
-                    btn.textContent = number;
-                    btn.onclick = () => {
-                        phoneNumberInput.value = number;
-                        fetchData();
-                    };
-                    historyButtons.appendChild(btn);
-                });
-            } else {
-                historyContainer.classList.add('hidden');
-            }
-        }
+     //   function renderHistory() {
+        //    historyButtons.innerHTML = '';
+          //  if (searchHistory.length > 0) {
+           //     historyContainer.classList.remove('hidden');
+            //    searchHistory.forEach(number => {
+                //    const btn = document.createElement('button');
+                //    btn.className = 'history-btn px-3 py-1 rounded-md text-sm';
+                //    btn.textContent = number;
+                //    btn.onclick = () => {
+                 //       phoneNumberInput.value = number;
+                 //       fetchData();
+              //      };
+                //    historyButtons.appendChild(btn);
+            //    });
+          //  } else {
+            //    historyContainer.classList.add('hidden');
+           // }
+        //} 
 
         async function fetchData() {
             const phoneNumber = phoneNumberInput.value.trim();
