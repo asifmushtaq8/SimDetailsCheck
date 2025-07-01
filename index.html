@@ -1,153 +1,455 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>📞 SIM Detail Checker</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #00c6ff, #0072ff);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIM Database Finder (U-Style)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Library for creating screenshots -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0c0a1a; /* Dark purple background */
+            background-image: 
+                linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
+            background-size: 25px 25px;
+            padding-top: 80px; /* Space for fixed header */
+            padding-bottom: 80px; /* Space for fixed footer */
+        }
+        
+        .gradient-card {
+            background: linear-gradient(145deg, rgba(30, 27, 75, 0.6), rgba(59, 19, 84, 0.6));
+            backdrop-filter: blur(15px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
 
-    .container {
-      background: #fff;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      width: 360px;
-      text-align: center;
-    }
+        .glow-logo {
+            background-color: #1e1b4b; /* Deep indigo */
+            border: 2px solid #a78bfa; /* Light purple */
+            box-shadow: 0 0 15px #a78bfa, 0 0 25px #a78bfa, inset 0 0 5px #a78bfa;
+        }
+        
+        .pro-btn {
+            background: linear-gradient(90deg, #8b5cf6, #d946ef);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 0 10px rgba(217, 70, 239, 0.4), 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+        .pro-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(217, 70, 239, 0.6), 0 0 30px rgba(139, 92, 246, 0.6);
+        }
 
-    h2 {
-      color: #0072ff;
-      margin-bottom: 25px;
-      font-size: 26px;
-    }
+        /* Tab Styles */
+        .tab-btn {
+            padding: 0.75rem 1rem;
+            border: none;
+            background-color: transparent;
+            color: #a78bfa; /* Light purple */
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            flex-grow: 1;
+            text-align: center;
+        }
+        .tab-btn.active-tab {
+            color: #ffffff;
+            border-bottom-color: #d946ef; /* Pink accent */
+        }
 
-    input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border: 2px solid #ccc;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      transition: 0.3s;
-    }
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-left-color: #ffffff;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-    input[type="text"]:focus {
-      border-color: #0072ff;
-      outline: none;
-    }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
 
-    button {
-      background-color: #0072ff;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      font-size: 16px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #005dc1;
-    }
-
-    .result {
-      margin-top: 25px;
-      padding: 20px;
-      background-color: #f4f8ff;
-      border-radius: 10px;
-      text-align: left;
-      display: none;
-      font-size: 16px;
-    }
-
-    .result p {
-      margin: 10px 0;
-    }
-
-    .error {
-      color: red;
-      margin-top: 10px;
-      display: none;
-    }
-
-    .loader {
-      display: none;
-      margin-top: 15px;
-    }
-  </style>
+        .history-btn {
+            background-color: rgba(30, 27, 75, 0.5);
+            border: 1px solid #4c1d95;
+            color: #c4b5fd;
+            transition: all 0.2s ease;
+        }
+        .history-btn:hover {
+            background-color: rgba(59, 19, 84, 0.7);
+            color: #fff;
+            border-color: #a78bfa;
+        }
+    </style>
 </head>
-<body>
-  <div class="container">
-    <h2>📞 SIM Detail Checker</h2>
-    <input type="text" id="numberInput" placeholder="📱 Enter Mobile Number">
-    <button onclick="checkSimDetails()">🔍 Check Details</button>
-    <div class="loader" id="loader">⏳ Loading...</div>
-    <div class="error" id="errorMsg"></div>
+<body class="text-gray-200">
 
-    <div class="result" id="resultBox">
-      <h3>🧾 SIM Information</h3>
-      <p><strong>👤 Name:</strong> <span id="name"></span></p>
-      <p><strong>🪪 CNIC:</strong> <span id="cnic"></span></p>
-      <p><strong>📱 Number:</strong> <span id="number"></span></p>
-      <p><strong>📶 Network:</strong> <span id="network"></span></p>
-      <p><strong>📍 Address:</strong> <span id="city"></span></p>
-    </div>
-  </div>
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 bg-black/30 backdrop-blur-lg border-b border-violet-900/50 z-50">
+        <div class="w-full max-w-md mx-auto flex justify-between items-center p-4 text-xs">
+            <div class="text-left">
+                <div id="time-display" class="font-bold text-white">--:-- --</div>
+                <div id="date-display" class="text-violet-400">Loading...</div>
+            </div>
+            <div class="text-right">
+                <div class="font-bold text-white">Ārifwāla</div>
+                <div class="text-violet-400">Punjab, Pakistan</div>
+            </div>
+        </div>
+    </header>
 
-  <script>
-    function checkSimDetails() {
-      const input = document.getElementById("numberInput").value.trim();
-      const number = input.replace(/^0/, ""); // Remove leading 0
-      const resultBox = document.getElementById("resultBox");
-      const loader = document.getElementById("loader");
-      const errorMsg = document.getElementById("errorMsg");
+    <main class="flex items-center justify-center min-h-full p-4">
+        <div class="w-full max-w-md mx-auto">
+            <div class="gradient-card rounded-2xl p-6 md:p-8">
+                
+                <div class="text-center mb-6">
+                    <div class="flex justify-center mb-4">
+                        <div class="w-24 h-24 rounded-full glow-logo flex items-center justify-center">
+                            <i class="fa-solid fa-satellite-dish text-5xl text-violet-300"></i>
+                        </div>
+                    </div>
+                    <h1 class="text-3xl font-bold text-white">SIM Info Finder</h1>
+                    <p class="text-violet-300 mt-1">Developer <span class="text-pink-400">•</span> Creator <span class="text-pink-400">•</span> Problem Solver</p>
+                </div>
 
-      resultBox.style.display = "none";
-      errorMsg.style.display = "none";
+                <div class="flex border-b border-violet-800 mb-6">
+                    <button id="search-tab-btn" class="tab-btn active-tab"><i class="fa-solid fa-magnifying-glass mr-2"></i>Search</button>
+                    <button id="about-tab-btn" class="tab-btn"><i class="fa-solid fa-circle-info mr-2"></i>About</button>
+                </div>
 
-      if (number === "" || number.length !== 10 || isNaN(number)) {
-        errorMsg.textContent = "⚠️ Please enter a valid 11-digit Pakistani number (starting with 03...)";
-        errorMsg.style.display = "block";
-        return;
-      }
+                <div id="search-content" class="tab-content fade-in">
+                    <div class="relative mb-4">
+                         <input type="tel" id="phoneNumber" class="w-full bg-indigo-900/50 border border-violet-700 text-white placeholder-gray-400 text-base rounded-lg focus:ring-pink-500 focus:border-pink-500 block p-3.5" placeholder="Enter number (e.g., 3001234567)" required>
+                    </div>
+                    <button id="searchButton" class="w-full pro-btn text-white font-bold rounded-lg text-base px-6 py-3.5 inline-flex items-center justify-center">
+                        <span id="buttonText">Search Database</span>
+                        <div id="loader" class="spinner hidden"></div>
+                    </button>
 
-      loader.style.display = "block";
+                    <div id="history-container" class="mt-6 hidden">
+                        <h3 class="text-sm font-bold text-violet-300 mb-2 text-center">Recent Searches</h3>
+                        <div id="history-buttons" class="flex flex-wrap gap-2 justify-center"></div>
+                    </div>
 
-      fetch(`proxy.php?phone=${number}`)
-        .then(response => response.json())
-        .then(data => {
-          loader.style.display = "none";
+                    <div id="resultsContainer" class="mt-6 space-y-4">
+                        <div id="error-message" class="hidden p-4 text-sm text-pink-200 bg-pink-900/50 border border-pink-700 rounded-lg" role="alert"></div>
+                        <div id="data-display" class="hidden space-y-4"></div>
+                        <button id="saveScreenshotBtn" class="hidden w-full pro-btn text-white font-bold rounded-lg text-base px-6 py-3.5 items-center justify-center mt-4">
+                            <i class="fa-solid fa-camera-retro mr-2"></i> Save as Screenshot
+                        </button>
+                    </div>
+                </div>
 
-          if (Array.isArray(data) && data.length > 0) {
-            const record = data[0];
-            document.getElementById("name").textContent = record.Name || "N/A";
-            document.getElementById("cnic").textContent = record.CNIC || "N/A";
-            document.getElementById("number").textContent = "0" + record.Number || input;
-            document.getElementById("network").textContent = record.Operator || "N/A";
-            document.getElementById("city").textContent = record.Address || "N/A";
-            resultBox.style.display = "block";
-          } else {
-            errorMsg.textContent = "❌ No record found.";
-            errorMsg.style.display = "block";
-          }
-        })
-        .catch(error => {
-          loader.style.display = "none";
-          errorMsg.textContent = "🚫 Error fetching data. Please try again.";
-          errorMsg.style.display = "block";
-          console.error("Fetch error:", error);
+                <div id="about-content" class="tab-content hidden fade-in">
+                    <div class="space-y-4 text-violet-200">
+                        <p>This tool allows you to search a database for SIM card owner information based on a phone number.</p>
+                        <h4 class="font-bold text-pink-400 text-lg pt-2">Features</h4>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Sleek, modern interface inspired by professional designs.</li>
+                            <li>Bypasses CORS issues by using a reliable proxy.</li>
+                            <li>Real-time data fetching from the API.</li>
+                            <li>Save results as a beautiful PNG screenshot.</li>
+                            <li>Keeps a history of your recent searches.</li>
+                        </ul>
+                         <h4 class="font-bold text-pink-400 text-lg pt-2">Disclaimer</h4>
+                         <p>The data provided is sourced from a third-party API. We do not guarantee its accuracy or completeness. This tool should be used responsibly and ethically.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="fixed bottom-0 left-0 right-0 bg-black/30 backdrop-blur-lg border-t border-violet-900/50 z-50">
+        <div class="w-full max-w-md mx-auto flex justify-center items-center p-4 space-x-6">
+            <a href="#" class="text-violet-400 hover:text-pink-400 transition-colors"><i class="fab fa-github fa-lg"></i></a>
+            <a href="#" class="text-violet-400 hover:text-pink-400 transition-colors"><i class="fab fa-linkedin fa-lg"></i></a>
+            <a href="#" class="text-violet-400 hover:text-pink-400 transition-colors"><i class="fab fa-twitter fa-lg"></i></a>
+            <a href="#" class="text-violet-400 hover:text-pink-400 transition-colors"><i class="fa-solid fa-globe fa-lg"></i></a>
+        </div>
+    </footer>
+
+
+    <script>
+        // DOM Element References
+        const searchButton = document.getElementById('searchButton');
+        const phoneNumberInput = document.getElementById('phoneNumber');
+        const errorMessageDiv = document.getElementById('error-message');
+        const dataDisplayDiv = document.getElementById('data-display');
+        const loader = document.getElementById('loader');
+        const buttonText = document.getElementById('buttonText');
+        const saveScreenshotBtn = document.getElementById('saveScreenshotBtn');
+        const historyContainer = document.getElementById('history-container');
+        const historyButtons = document.getElementById('history-buttons');
+
+        // Tab References
+        const searchTabBtn = document.getElementById('search-tab-btn');
+        const aboutTabBtn = document.getElementById('about-tab-btn');
+        const searchContent = document.getElementById('search-content');
+        const aboutContent = document.getElementById('about-content');
+
+        let searchHistory = ["3076956343", "3011425525"];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateClock();
+            setInterval(updateClock, 1000);
+            loadHistory();
+            renderHistory();
         });
-    }
-  </script>
+
+        searchButton.addEventListener('click', fetchData);
+        phoneNumberInput.addEventListener('keyup', (event) => { if (event.key === 'Enter') fetchData(); });
+        saveScreenshotBtn.addEventListener('click', saveScreenshot);
+        searchTabBtn.addEventListener('click', () => switchTab('search'));
+        aboutTabBtn.addEventListener('click', () => switchTab('about'));
+        
+        function updateClock() {
+            const now = new Date();
+            const timeOpts = { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true, timeZone: 'Asia/Karachi' };
+            const dateOpts = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'Asia/Karachi' };
+            
+            document.getElementById('time-display').textContent = now.toLocaleTimeString('en-US', timeOpts);
+            document.getElementById('date-display').textContent = now.toLocaleDateString('en-US', dateOpts);
+        }
+
+        function switchTab(tabName) {
+            if (tabName === 'search') {
+                aboutContent.classList.add('hidden');
+                searchContent.classList.remove('hidden');
+                aboutTabBtn.classList.remove('active-tab');
+                searchTabBtn.classList.add('active-tab');
+            } else {
+                searchContent.classList.add('hidden');
+                aboutContent.classList.remove('hidden');
+                searchTabBtn.classList.remove('active-tab');
+                aboutTabBtn.classList.add('active-tab');
+            }
+        }
+
+        function loadHistory() {
+            const storedHistory = localStorage.getItem('simSearchHistory');
+            if (storedHistory) {
+                const parsedHistory = JSON.parse(storedHistory);
+                if(parsedHistory.length > 0) {
+                   searchHistory = parsedHistory;
+                }
+            }
+        }
+
+        function saveHistory() {
+            localStorage.setItem('simSearchHistory', JSON.stringify(searchHistory));
+        }
+
+        function addToHistory(number) {
+            searchHistory = searchHistory.filter(item => item !== number);
+            searchHistory.unshift(number);
+            if (searchHistory.length > 5) searchHistory.pop();
+            saveHistory();
+            renderHistory();
+        }
+
+        function renderHistory() {
+            historyButtons.innerHTML = '';
+            if (searchHistory.length > 0) {
+                historyContainer.classList.remove('hidden');
+                searchHistory.forEach(number => {
+                    const btn = document.createElement('button');
+                    btn.className = 'history-btn px-3 py-1 rounded-md text-sm';
+                    btn.textContent = number;
+                    btn.onclick = () => {
+                        phoneNumberInput.value = number;
+                        fetchData();
+                    };
+                    historyButtons.appendChild(btn);
+                });
+            } else {
+                historyContainer.classList.add('hidden');
+            }
+        }
+
+        async function fetchData() {
+            const phoneNumber = phoneNumberInput.value.trim();
+
+            setLoadingState(true);
+            errorMessageDiv.classList.add('hidden');
+            dataDisplayDiv.classList.add('hidden');
+            saveScreenshotBtn.classList.add('hidden');
+            dataDisplayDiv.innerHTML = '';
+
+            if (!/^\d{10}$/.test(phoneNumber)) {
+                showError('Please enter a valid 10-digit phone number.');
+                setLoadingState(false);
+                return;
+            }
+
+            const targetApiUrl = `https://legendxdata.site/Api/simdata.php?phone=${phoneNumber}`;
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetApiUrl)}`;
+
+            try {
+                const response = await fetch(proxyUrl, { headers: { 'Accept': 'application/json' } });
+                if (!response.ok) throw new Error(`Network response was not ok.`);
+                
+                const textData = await response.text();
+                let jsonData;
+                try {
+                    jsonData = JSON.parse(textData);
+                } catch (parseError) {
+                    showError("No data found for this number. 😔");
+                    setLoadingState(false);
+                    return;
+                }
+                
+                if (Array.isArray(jsonData) && jsonData.length > 0) {
+                    displayData(jsonData);
+                    addToHistory(phoneNumber);
+                } else {
+                    showError("No records were found for this number. 🤷‍♂️");
+                }
+
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                showError(`API Error. The server might be down or busy.`);
+            } finally {
+                setLoadingState(false);
+            }
+        }
+
+        function displayData(dataArray) {
+            dataDisplayDiv.innerHTML = '';
+            
+            dataArray.forEach((record, index) => {
+                const card = document.createElement('div');
+                card.className = 'gradient-card p-5 rounded-lg fade-in';
+                card.style.animationDelay = `${index * 100}ms`;
+
+                let content = `<h3 class="text-lg font-semibold text-pink-400 border-b border-violet-800 pb-3 mb-4">📄 Record ${index + 1}</h3>`;
+                content += '<div class="space-y-4">';
+                
+                // --- FIX: Smart data display ---
+                // This new logic iterates over all keys provided by the API for each record.
+                // It ensures that if a key like 'name' or 'address' exists, it will be displayed.
+                const preferredOrder = ['NAME', 'CNIC', 'NUMBER', 'ADDRESS', 'CITY', 'DATE'];
+                const recordKeys = Object.keys(record);
+
+                // Create a map for easy lookup of original keys by their uppercase version
+                const keyMap = recordKeys.reduce((map, key) => {
+                    map[key.toUpperCase()] = key;
+                    return map;
+                }, {});
+                
+                // Sort the keys based on preferred order, then alphabetically
+                const sortedKeys = recordKeys.sort((a, b) => {
+                    const upperA = a.toUpperCase();
+                    const upperB = b.toUpperCase();
+                    const indexA = preferredOrder.indexOf(upperA);
+                    const indexB = preferredOrder.indexOf(upperB);
+
+                    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                    if (indexA !== -1) return -1;
+                    if (indexB !== -1) return 1;
+                    return upperA.localeCompare(upperB);
+                });
+
+                // Display all available data in the sorted order
+                sortedKeys.forEach(key => {
+                    if (record[key]) { // Only display if there's a value
+                        content += createDefinitionTerm(key, record[key]);
+                    }
+                });
+
+                content += '</div>';
+                card.innerHTML = content;
+                dataDisplayDiv.appendChild(card);
+            });
+
+            dataDisplayDiv.classList.remove('hidden');
+            saveScreenshotBtn.classList.remove('hidden');
+        }
+
+        function saveScreenshot() {
+            saveScreenshotBtn.classList.add('hidden');
+
+            const screenshotWrapper = document.createElement('div');
+            screenshotWrapper.style.position = 'absolute';
+            screenshotWrapper.style.left = '-9999px';
+            screenshotWrapper.style.width = '550px';
+            
+            const screenshotContent = document.createElement('div');
+            screenshotContent.className = 'gradient-card rounded-2xl p-6 text-gray-200';
+            screenshotContent.style.fontFamily = "'Inter', sans-serif";
+
+            const header = document.createElement('div');
+            header.className = 'text-center pb-4 border-b border-violet-800 mb-4';
+            header.innerHTML = `<h2 class="text-2xl font-bold text-white">SIM Data Report</h2><p class="text-violet-300 mt-1">${phoneNumberInput.value}</p>`;
+            screenshotContent.appendChild(header);
+
+            const clonedData = dataDisplayDiv.cloneNode(true);
+            clonedData.classList.remove('hidden');
+            screenshotContent.appendChild(clonedData);
+
+            const footer = document.createElement('div');
+            const now = new Date();
+            footer.className = 'text-center pt-4 border-t border-violet-800 mt-4 text-xs text-violet-400';
+            footer.innerHTML = `<p>Generated by SIM Info Finder</p><p>${now.toLocaleString()}</p>`;
+            screenshotContent.appendChild(footer);
+
+            screenshotWrapper.appendChild(screenshotContent);
+            document.body.appendChild(screenshotWrapper);
+
+            html2canvas(screenshotContent, {
+                backgroundColor: '#0c0a1a',
+                useCORS: true,
+                scale: 2 
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `sim-data-${phoneNumberInput.value}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                link.remove();
+                
+                document.body.removeChild(screenshotWrapper);
+                saveScreenshotBtn.classList.remove('hidden');
+            }).catch(err => {
+                console.error("Screenshot failed:", err);
+                showError("Could not save screenshot.");
+                document.body.removeChild(screenshotWrapper);
+                saveScreenshotBtn.classList.remove('hidden');
+            });
+        }
+        
+        function getIconForKey(key) {
+            const upperKey = key.toUpperCase();
+            const iconMap = {'NAME': 'fa-solid fa-user-astronaut','CNIC': 'fa-solid fa-id-badge','NUMBER': 'fa-solid fa-mobile-retro','ADDRESS': 'fa-solid fa-map-location-dot','CITY': 'fa-solid fa-city','DATE': 'fa-solid fa-calendar-star'};
+            return iconMap[upperKey] || 'fa-solid fa-question-circle';
+        }
+
+        function createDefinitionTerm(key, value) {
+            const iconClass = getIconForKey(key);
+            return `<div class="flex items-start gap-4"><i class="${iconClass} text-violet-400 text-lg w-5 text-center mt-1"></i><div><dt class="text-xs font-semibold text-violet-300 uppercase tracking-wider">${key.replace(/_/g, ' ')}</dt><dd class="text-base text-gray-200">${value || 'N/A'}</dd></div></div>`;
+        }
+
+        function showError(message) {
+            errorMessageDiv.innerHTML = `<i class="fa-solid fa-ghost mr-3"></i> ${message}`;
+            errorMessageDiv.classList.remove('hidden');
+            errorMessageDiv.classList.add('fade-in');
+        }
+
+        function setLoadingState(isLoading) {
+            searchButton.disabled = isLoading;
+            loader.classList.toggle('hidden', !isLoading);
+            buttonText.classList.toggle('hidden', isLoading);
+        }
+    </script>
+
 </body>
 </html>
